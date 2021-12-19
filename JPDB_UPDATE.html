@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<title>Database Dashboard</title>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+<script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+</head>
+<body>
+<div class="container">
+<h2>Database UPDATE</h2>
+<form id="empForm" method="post">
+<div class="form-group">
+<span><label for="empId">Employee Serial Number:</label></span>
+<input type="text" class="form-control" name="empSerial" id="empSerial" placeholder="Enter Employee Serial Number #" required>
+</div>
+<div class="form-group" aria-label="Default">
+<span><label for="selectList">Select Column:</label></span>
+<select class="form-control" id="selectList">
+  <option selected>Open this select menu</option>
+  <option value="name">Name</option>
+  <option value="id">ID</option>
+  <option value="email">Email</option>
+  <option value="phone_no">Phone Number</option>
+  <option value="password">Password</option>
+</select>
+</div>
+<div class="form-group">
+<span><label for="empUpdateData">UPDATE DATA:</label></span>
+<input type="text" class="form-control" name="empUpdateData" id="empUpdateData" placeholder="Enter Employee Update Value" required>
+</div>
+<input type="button" class="btn btn-primary" id="empupdate" value="UPDATE" onclick="updateEmployee();">
+</form>
+</div>
+<script>
+$("#empSerial").focus();
+function validateAndGetFormData() {
+	var empIdVar = $("#empSerial").val();
+	if (empIdVar === "") {
+	alert("Employee Serial Number Required");
+	$("#empSerial").focus();
+	return "";
+	}
+	var empUpdateData = $("#empUpdateData").val();
+	if (empUpdateData === "") {
+	alert("Employee Update Data Required");
+	$("#empUpdateData").focus();
+	return "";
+	}
+	var selectData = $("#selectList").val();
+	let jsonStrObj = {};
+	let jsonStrObjcopy = {};
+	jsonStrObjcopy[selectData]=empUpdateData;
+	jsonStrObj[empIdVar]=jsonStrObjcopy;
+	return jsonStrObj;
+	}
+function createUPDATERequest(connToken, jsonObj, dbName, relName) {
+	var putRequest = {
+		"token": connToken,
+		"cmd": "UPDATE",
+		"dbName": dbName,
+		"rel": relName,
+		"jsonStr": jsonObj
+	};
+	return JSON.stringify(putRequest);
+	}
+function executeCommand(reqString, dbBaseUrl, apiEndPointUrl) {
+	var url = dbBaseUrl + apiEndPointUrl;
+	var jsonObj;
+	$.post(url, reqString, function (result) {
+	jsonObj = JSON.parse(result);
+	}).fail(function (result) {
+	var dataJsonObj = result.responseText;
+	jsonObj = JSON.parse(dataJsonObj);
+	});
+	return jsonObj;
+	}
+function resetForm() {
+	$("#empSerial").val("");
+	$("#empUpdateData").val("");
+	$("#empId").focus();
+	}
+function updateEmployee() {
+	var jsonStr = validateAndGetFormData();
+	if (jsonStr === "") {
+	return;
+	}
+	var putReqStr = createUPDATERequest("90938572|-31948824996596151|90946648",jsonStr, "EmployeeData", "Emp");
+	alert(putReqStr);
+	jQuery.ajaxSetup({async: false});
+	var resultObj = executeCommand(putReqStr,"http://api.login2explore.com:5577", "/api/iml");
+	alert(JSON.stringify(resultObj));
+	jQuery.ajaxSetup({async: true});
+	resetForm();
+	}
+</script>
+</body>
+</html>
