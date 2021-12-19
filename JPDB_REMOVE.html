@@ -59,7 +59,7 @@
 			if (jsonStr === "") {
 			return;
 			}
-			var putReqStr = createREMOVERequest("90938572|-31948824996596151|90946648",jsonStr, "EmployeeData", "Emp");
+			var putReqStr = createREMOVERequest("<!--write your api-->",jsonStr, "EmployeeData", "Emp");
 			alert(putReqStr);
 			jQuery.ajaxSetup({async: false});
 			var resultObj = executeCommand(putReqStr,"http://api.login2explore.com:5577", "/api/iml");
